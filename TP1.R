@@ -1,25 +1,36 @@
 #mon_jeu_de_donnees <- readLines ("https://raw.githubusercontent.com/agusbudi/DataAnalysis/master/data1TP1.txt", warn=FALSE)
 mon_jeu_de_donnees <- read.delim("https://raw.githubusercontent.com/agusbudi/DataAnalysis/master/data1TP1.txt", header=TRUE, sep="\t")
+
+
+#1. Tracez en dimension 2 le nuage de 15 points pour chaque variable. Que pouvez-vous observer ?
+
 names(mon_jeu_de_donnees)
 mon_jeu_de_donnees$Y
 plot(mon_jeu_de_donnees$A, mon_jeu_de_donnees$Y,type="p")
 #courbe décroissante pour A
 #relation faible
 #relation non linéaire négative
+
 plot(mon_jeu_de_donnees$B, mon_jeu_de_donnees$Y,type="p")
 #courbe croissante pour B
 #relation faible
 #relation non linéaire positive
+
 plot(mon_jeu_de_donnees$C, mon_jeu_de_donnees$Y,type="p")
 #bordel pour C
 #abscence de relation
+
 plot(mon_jeu_de_donnees$D, mon_jeu_de_donnees$Y,type="p")
 #courbe exponentielle pour D
 #relation faible
 #relation non linéaire positive
+
 plot(mon_jeu_de_donnees$E, mon_jeu_de_donnees$Y,type="p")
 #courbe en cloche pour E
 #relation faible
+
+#2. PEARSON: Quelle variable a la plus petite corrélation ? Pourquoi ?
+#La variable E a la plus petite des corrélation
 
 coeff_r <- function(x,y) {
   #ecart_type_x = sqrt(mean(x^2)-mean(x)^2)
@@ -39,7 +50,10 @@ coeff_r <- function(x,y) {
 #cor(mon_jeu_de_donnees$D,mon_jeu_de_donnees$Y)
 #coeff_r(mon_jeu_de_donnees$E,mon_jeu_de_donnees$Y)
 #cor(mon_jeu_de_donnees$E,mon_jeu_de_donnees$Y)
-#La variable E a la plus petite des corrélation
+
+#3. Créez une fonction du coefficient de Spearman en considérant cette formule :
+#SPEARMAN : Comparez le score obtenu au résultat de la question 2. Quelle est la différence ?
+
 
 sum(rank(mon_jeu_de_donnees$D)[i]-rank(mon_jeu_de_donnees$Y)[i])
 
@@ -64,15 +78,21 @@ coeff_p <- function(x,y) {
 #coeff_p(mon_jeu_de_donnees$E,mon_jeu_de_donnees$Y)
 #cor(mon_jeu_de_donnees$E,mon_jeu_de_donnees$Y,method="spearman")
 
-mon_jeu_de_donnees2 <- read.delim("https://raw.githubusercontent.com/agusbudi/DataAnalysis/master/data2TP1.txt", header=TRUE, sep="\t")
-names(mon_jeu_de_donnees2)
-mon_jeu_de_donnees2$Marseille
-mon_jeu_de_donnees2$Aix
+#4) Comment calculer la relation non-linéaire et non-monotone entre variables E et Y ? Proposez votre idée.
 
 # Une variable non-linéaire et non-monotone, comme entre E et Y, peut être tout
 # simplement un polynome, c'est à dire une relation entre plusieurs variables.
 # Plusieurs solutions peuvent être utilisées pour résoudre ce problème :
 # faire une transformation, utiliser une fonction non-linéaire...
+
+
+#5. Test d'indépendance pour une variable quantitative
+mon_jeu_de_donnees2 <- read.delim("https://raw.githubusercontent.com/agusbudi/DataAnalysis/master/data2TP1.txt", header=TRUE, sep="\t")
+names(mon_jeu_de_donnees2)
+mon_jeu_de_donnees2$Marseille
+mon_jeu_de_donnees2$Aix
+
+
 
 score_t <- function(x) {
   abs(mean(x)-19)/(sd(x, na.rm = FALSE)/sqrt(length(x)))
@@ -81,6 +101,8 @@ score_t <- function(x) {
 score_t(mon_jeu_de_donnees2$Marseille)
 #2.145, on rejette car résultat plus grand 2.177369
 
+
+#6. Test d'indépendance pour deux variables quantitatives
 score_t_2 <- function(x1,x2) {
   abs(mean(x1)-mean(x2)) / sqrt( (sd(x1, na.rm = FALSE)^2 / length(x1)) + (sd(x2, na.rm = FALSE)^2 / length(x2)) )
 }
@@ -91,6 +113,8 @@ score_t_2(mon_jeu_de_donnees2$Marseille,mon_jeu_de_donnees2$Aix)
 # Observation normale, car le test est plus précis, donc engloble plus de valeurs. Avec une précision de 98%,
 # la valeur obtenue par le test est inclu dans la courbe en cloche, alors qu'elle ne l'était pas avec 
 # un test de niveau de signification d'alpha 0.05.
+
+#7. Test d'indépendance pour une variable qualitative (Non paramètrique)
 
 ratio = c(9,3,3,1)
 val_obs = c(1528,106,117,381)
@@ -122,6 +146,8 @@ khi_deux(val_theorique,val_obs)
 #On obtient 966, pour un degré de liberté de 3, on devrait avoir 7.81
 #Soit beaucoup plus grand ! On en conclut que les valeurs de ratios ne sont pas bonnes
 
+#8. Test d'indépendance pour les variables qualitatives
+
 val_form = rbind(c(29,5,46), c(40,32,8), c(18,22,0))
 val_precense = rbind(c(20,60), c(29,51), c(12,28))
 print(val_form)
@@ -131,7 +157,7 @@ val_form_theo = rbind(c(0,0,0), c(0,0,0), c(0,0,0))
 val_precense_theo = rbind(c(0,0), c(0,0), c(0,0))
 
 khi_deux_matriciel <- function(mat) {
-  val_theo <- matrix(nrow=nrow(mat), ncol=ncol(mat))
+  val_theo <-matrix(nrow=nrow(mat),ncol=ncol(mat))
   khi_deux=0
   for (i in 1:nrow(mat)) {
     for (j in 1:ncol(mat)) {
@@ -147,6 +173,10 @@ print(khi_deux_matriciel(val_precense))
 #Cela ne vérifie pas H0, elle est dépendante, elle est donc importante pour détecter un mélanome
 #Cela vérifie H0, donc elle est indépendante, elle n'est donc pas importante pour détecter un mélanome
 
+
+#9. Selon les questions précédentes, pourquoi le test de Student/t est classé comme paramétrique et le test du Khi
+#Deux est classé comme non paramétrique ? Pouvons-nous appliquer le test de Student/t aux données qualitatives?
+  
 #Les tests paramétriques se basent sur des distributions statistiques supposées dans les données. 
 #Par conséquent, certaines conditions de validité doivent être vérifiées pour que le résultat d'un test paramétrique
 #soit fiable. 
@@ -162,6 +192,7 @@ print(khi_deux_matriciel(val_precense))
 #ne sont pas des paramètres à proprement parler
 #C'est pour cela qu'il est non-paramétrique.
 
+#10.Pouvons-nous appliquer le coefficient de Pearson et le coefficient de Spearman aux données qualitatives?
 
 #Les données qualitatives sont des données auxquelles on ne peut pas attribuer une valeur ou une caractéristique.
 #Exemples de propriétés physiques qualitatives : La couleur, la texture, le goût, l'odeur, l'état et la ductilité.
